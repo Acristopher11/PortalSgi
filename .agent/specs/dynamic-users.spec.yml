@@ -1,0 +1,19 @@
+feature: "Dynamic User & Role Resolution"
+description: "Resolves all portal users and roles dynamically from areas hierarchy, process owners, and quality configuration, making manual user management obsolete and preventing saving errors."
+acceptance_criteria:
+  - given: "The SGI Portal is initialized"
+    when: "Fetching all users"
+    then: "A consolidated list of users is built dynamically from SGI_MaestraProceso (DP), SGI_Areas (Encargado), and admin lists/quality managers (Admin)."
+  - given: "A user is defined in multiple sources (e.g. process owner and area manager)"
+    when: "Resolving their role"
+    then: "The highest privilege role is assigned (Admin > DP > Encargado > Usuario)."
+  - given: "A process owner of P-SGI-01, P-SGI-02, or P-SGI-07 is loaded"
+    when: "Resolving their role"
+    then: "The role is upgraded to Admin as they are SGI Quality Configuration managers."
+  - given: "The User Management console is opened"
+    when: "Viewing the system users tab"
+    then: "The interface displays a read-only consolidated list of dynamically resolved users, an informational banner, and no manual CRUD actions."
+priority: "P0"
+dependencies:
+  - SGI_MaestraProceso
+  - SGI_Areas

@@ -1,0 +1,49 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw; /* Fullscreen width */
+  background-color: var(--color-bg-light); /* Use CSS Variable */
+  overflow: hidden; /* Prevent body scroll */
+}
+
+.layout-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  position: relative; /* Ensure it stays behind fixed elements if any */
+}
+
+.layout-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px; /* A bit more breathing room */
+  background-color: var(--color-bg-light); /* Use CSS Variable */
+  transition: all 0.3s ease; /* Smooth transition for sidebar toggle if added */
+}
+
+/* Scrollbar styling - Modernized */
+.layout-content::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.layout-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.layout-content::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.layout-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .layout-content {
+    padding: 16px;
+  }
+}

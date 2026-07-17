@@ -1,0 +1,20 @@
+feature: "Email Approvals & Quality Config Picker"
+description: "Implements Outlook-style simulated email approvals and enables interactive PeoplePickers for both Area Hierarchies and Quality Config, allowing direct modification of quality managers."
+acceptance_criteria:
+  - given: "An SGI Administrator is in the Flow Management console"
+    when: "Viewing the Configuración de Calidad tab"
+    then: "They can edit the responsible person for SGI processes (P-SGI-01, P-SGI-02, P-SGI-07) using a PeoplePicker, which updates the SGI_MaestraProceso list."
+  - given: "The Area Structure configuration dialog is open"
+    when: "Setting the responsible manager"
+    then: "A single PeoplePicker is used, which automatically resolves and updates both the manager's name and email address, simplifying the form."
+  - given: "An approval request is pending in the flow monitor"
+    when: "Viewing the Buzón de Correos SGI (Simulación) tab"
+    then: "An Outlook-style interactive card is presented with 'Aprobar desde Outlook' and 'Rechazar desde Outlook' buttons."
+  - given: "The user clicks 'Aprobar desde Outlook' in the simulated email card"
+    when: "Entering an optional approval comment and submitting"
+    then: "The approval request is updated directly in SharePoint/localStorage, advancing to the next step of the hierarchical approval flow."
+priority: "P0"
+dependencies:
+  - SGI_MaestraProceso
+  - SGI_Areas
+  - SGI_Aprobaciones

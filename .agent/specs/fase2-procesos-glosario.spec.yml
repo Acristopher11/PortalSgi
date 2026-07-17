@@ -1,0 +1,53 @@
+feature: "Fase 2: Gestión de Procesos, Glosario, Detalle y Documentación"
+description: "Implementa capacidades de búsqueda, ordenamiento y alcance para Procesos; módulo de Glosario SGI_Glosario con control de escritura; vista de detalle de procesos (/procesos/:id) integrada con SIPOC, KPIs y Riesgos; y biblioteca de Gestión Documental con pre-filtrado y permisos de edición específicos por dueño de proceso."
+
+dependencies:
+  - sharepoint-list: "SGI_MaestraProceso"
+  - sharepoint-list: "SGI_Glosario"
+  - sharepoint-list: "SGI_SIPOC"
+  - sharepoint-document-library: "Gestión Documental"
+  - component: "ProcessManagement"
+  - page: "GlossaryManagement"
+  - page: "ProcessDetail"
+  - page: "DocumentManagement"
+
+acceptance_criteria:
+  - id: AC-001
+    title: "Búsqueda y Ordenamiento de Procesos"
+    given: "El usuario se encuentra en la Gestión de Procesos"
+    when: "Usa el campo de búsqueda o cambia la opción del selector de orden"
+    then: "La tabla filtra dinámicamente los procesos por código o nombre, y los ordena de forma ascendente o descendente según la selección."
+
+  - id: AC-002
+    title: "Columna y Campo Alcance en Procesos"
+    given: "El usuario visualiza la tabla o el formulario de creación/edición de procesos"
+    when: "Se listan los procesos o se abre el formulario CRUD"
+    then: "Se muestra el valor de 'Alcance' (proveniente de sgi_Alcance en SharePoint) inmediatamente después del objetivo en la tabla, y se provee un campo de texto para leer y escribir este campo en el modal."
+
+  - id: AC-003
+    title: "Módulo de Glosario (/glosario)"
+    given: "El usuario accede al Glosario"
+    when: "Se cargan los términos de SGI_Glosario (Title como Término, sgi_Definici_x00f3_n como Definición)"
+    then: "Todos los usuarios de la organización pueden ver el listado, pero solo Administradores y Desarrolladores ven y pueden usar los botones de añadir, editar o eliminar términos."
+
+  - id: AC-004
+    title: "Detalle de Proceso (/procesos/:id)"
+    given: "El usuario hace clic sobre un proceso en el listado de Gestión de Procesos"
+    when: "Se carga la página de detalle /procesos/:id"
+    then: "Se muestran de forma estructurada: 1) Código y Nombre; 2) Objetivo, Alcance, Área y Responsable; 3) SIPOC filtrado; 4) Tarjetas de KPIs correspondientes; 5) Tabla de Riesgos correspondientes; 6) Enlaces rápidos a Glosario y a Documentos pre-filtrados."
+
+  - id: AC-005
+    title: "Gestión Documental (/documentos) - Carga y Filtrado"
+    given: "El usuario accede al gestor documental"
+    when: "Ingresa directamente o con un parámetro de consulta ?procesoId=X"
+    then: "Se cargan los archivos de la biblioteca. Si se incluye el procesoId, se filtran automáticamente mostrando solo los documentos asociados al proceso."
+
+  - id: AC-006
+    title: "Gestión Documental (/documentos) - Permisos de Edición"
+    given: "Un usuario intenta subir, editar o borrar un documento en /documentos"
+    when: "Se valida su rol y correspondencia"
+    then: "1) Admins, Devs y el Dueño de P-SGI-01 pueden realizar acciones de escritura en cualquier documento; 2) Otros Dueños de Proceso solo pueden escribir/editar documentos asignados a su propio proceso (sgi_ProcesoAsoc); 3) Visitantes solo tienen permiso de lectura y descarga."
+
+priority: "P0"
+owner: "dev-team"
+version: "1.0"

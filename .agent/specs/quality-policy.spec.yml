@@ -1,0 +1,45 @@
+feature: "Módulo de Política de Calidad y Desempeño SGI"
+description: "Implementa el módulo de gestión de la Política de Calidad (basado en SGI_Objetivos), vinculando procesos e indicadores (KPIs) para calcular el cumplimiento de los 10 objetivos de la política, y visualizando su desempeño mediante gráficos interactivos integrados como pestaña en el Dashboard principal."
+
+dependencies:
+  - sharepoint-list: "SGI_Objetivos"
+  - sharepoint-list: "SGI_MaestraProceso"
+  - sharepoint-list: "SGI_KPI"
+  - page: "QualityPolicy"
+  - page: "Dashboard"
+  - component: "ProcessManagement"
+
+acceptance_criteria:
+  - id: AC-001
+    title: "Mapeo y CRUD de Objetivos de Calidad"
+    given: "El usuario accede al módulo de Política de Calidad (/politica-calidad)"
+    when: "Se cargan los datos de SGI_Objetivos"
+    then: "Se muestran los 10 compromisos de la junta. Los usuarios administradores/desarrolladores pueden crear, editar y eliminar compromisos mediante modales."
+
+  - id: AC-002
+    title: "Vinculación de Objetivos en Formulario de Procesos"
+    given: "El usuario edita o crea un proceso en la Gestión de Procesos"
+    when: "Abre el formulario CRUD"
+    then: "Se muestra un selector múltiple (Multi-Select Dropdown) con los objetivos de calidad activos para vincularlos al proceso (guardando en sgi_ObjLookup#Id)."
+
+  - id: AC-003
+    title: "Cálculo del Desempeño del Objetivo"
+    given: "El sistema carga los KPIs y procesos vinculados a un objetivo"
+    when: "Calcula el porcentaje de cumplimiento"
+    then: "El porcentaje es el promedio aritmético del cumplimiento de los KPIs de todos los procesos asociados a ese objetivo (Fórmula: actual / meta * 100, tope al 100%). Si no hay indicadores o procesos asociados, muestra 'Sin datos'."
+
+  - id: AC-004
+    title: "Vista de Desempeño Gráfico de la Política en el Dashboard"
+    given: "El usuario se encuentra en el Dashboard General (/dashboard)"
+    when: "Selecciona la pestaña/botón 'Política de Calidad'"
+    then: "Se presenta un gráfico consolidado de barras/progreso circular de los 10 puntos de la política, con colores semafóricos (Verde >= 90%, Amarillo >= 70%, Rojo < 70%)."
+
+  - id: AC-005
+    title: "Navegación e Integración en la Barra Lateral"
+    given: "El usuario navega por el portal"
+    when: "Usa la barra lateral (Sidebar)"
+    then: "Se visualiza la opción 'Política de Calidad' con enlace directo a /politica-calidad para la gestión y detalles del texto de los compromisos."
+
+priority: "P0"
+owner: "dev-team"
+version: "1.1"

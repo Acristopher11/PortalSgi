@@ -1,0 +1,56 @@
+feature: "Fase 1: Módulo de Riesgos, Mapa de Calor y Control de Acceso"
+description: "Establece las reglas de presentación de riesgos, el formato del mapa de calor y el control de accesos por roles (visitantes, dueños de proceso, administradores/desarrolladores) en la columna Acciones."
+
+dependencies:
+  - sharepoint-list: "MATRIZ DE GESTIÓN DE RIESGOS."
+  - component: "Dashboard"
+  - component: "RiskManagement"
+  - component: "RiskHeatmap"
+  - store: "useRiskStore"
+
+acceptance_criteria:
+  - id: AC-001
+    title: "Plan de Mitigación en tarjetas de riesgos del Dashboard"
+    given: "El usuario se encuentra en la vista de Gestión de Riesgos del Dashboard"
+    when: "Se renderiza un elemento de riesgo"
+    then: "Si el campo 'plan_mitigacion' ('PA ASOC') tiene texto, se muestra en la tarjeta; si está vacío, se muestra: 'No hay planes de mitigación para este riesgo'."
+
+  - id: AC-002
+    title: "Evento No Deseado en Mayúsculas"
+    given: "El repositorio de riesgos obtiene registros de SharePoint o del mock local"
+    when: "Se mapea el registro a la estructura Risk del dominio"
+    then: "El campo 'nombre' (columna Title/sgi_EventoNoDeseado) se guarda y expone completamente en MAYÚSCULAS."
+
+  - id: AC-003
+    title: "Eliminar la Columna Descripción en la Tabla de Gestión de Riesgos"
+    given: "El usuario accede a la página de Gestión de Riesgos (/riesgos)"
+    when: "La tabla de riesgos se renderiza"
+    then: "La columna 'Descripción' no aparece en el header de la tabla y la celda descriptiva de cada riesgo queda eliminada."
+
+  - id: AC-004
+    title: "Rotulado de Ejes en el Mapa de Calor (Heatmap)"
+    given: "El componente RiskHeatmap se renderiza en pantalla"
+    when: "Se dibuja la matriz 3x3 de riesgos"
+    then: "El eje vertical (Y) debe estar explícitamente etiquetado como 'IMPACTO (VI)' y el eje horizontal (X) como 'PROBABILIDAD (VP)' con sus respectivas direcciones."
+
+  - id: AC-005
+    title: "Permisos y Acceso para Visitante"
+    given: "Un usuario con rol Visitante (no Admin, no Dev, no dueño de proceso) inicia sesión"
+    when: "Accede a la página de Gestión de Riesgos"
+    then: "La columna 'Acciones' en la tabla de riesgos y el botón 'Nuevo Riesgo' no son visibles en absoluto."
+
+  - id: AC-006
+    title: "Permisos y Acceso para Dueño de Proceso"
+    given: "Un usuario que es Dueño de Proceso (no Admin, no Dev) accede a la página de Gestión de Riesgos"
+    when: "La tabla de riesgos se carga"
+    then: "Visualiza el botón 'Nuevo Riesgo' y la columna 'Acciones'. Sin embargo, los botones 'Editar' y 'Eliminar' solo están habilitados/visibles para los riesgos correspondientes a su proceso (donde canModifyRisk(risk) es verdadero)."
+
+  - id: AC-007
+    title: "Permisos y Acceso para Administrador y Desarrollador"
+    given: "Un usuario con rol Administrador o Desarrollador accede a la página de Gestión de Riesgos"
+    when: "La tabla de riesgos se carga"
+    then: "Visualiza el botón 'Nuevo Riesgo', la columna 'Acciones' y tiene habilitados los botones 'Editar' y 'Eliminar' para todos los riesgos sin restricciones."
+
+priority: "P0"
+owner: "dev-team"
+version: "1.0"

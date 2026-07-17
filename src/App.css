@@ -1,0 +1,44 @@
+/* Variables CSS Globales - SgiPortal Institutional Theme */
+:root {
+  /* Colors */
+  --color-midnight-blue: #001F3F;
+  --color-caribbean-red: #DC143C;
+  --color-white: #FFFFFF;
+  --color-bg-light: #F8F9FA;
+  --color-border: #E8EAED;
+  --color-text-primary: #2D3748;
+  --color-text-secondary: #636F7D;
+
+  /* Typography */
+  --font-family-base: Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  
+  /* Layout & Dimensions */
+  --sidebar-width: 250px;
+  --sidebar-width-collapsed: 64px;
+  --header-height: 60px;
+  
+  /* Shadows */
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Base Reset & Setup */
+html, body, #root {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Previene scroll global, se maneja en el content area */
+  font-family: var(--font-family-base);
+  background-color: var(--color-bg-light);
+  color: var(--color-text-primary);
+}
+
+/* Tipografía Base (Opcional, Fluent UI manejará mucha de esta) */
+h1 { font-size: 32px; font-weight: bold; margin: 0 0 16px 0; }
+h2 { font-size: 24px; font-weight: bold; margin: 0 0 16px 0; }
+h3 { font-size: 20px; font-weight: 600; margin: 0 0 12px 0; }
+
+* {
+  box-sizing: border-box;
+}

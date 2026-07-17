@@ -1,0 +1,44 @@
+feature: "Fase 4: Flujo de Aprobación ISO 9001 y Alertas"
+description: "Implementa el flujo de aprobación para la creación, modificación y eliminación de KPIs, Procesos, Riesgos, Glosario, SIPOC y Documentos, incluyendo la subida temporal de archivos binarios y notificaciones en tiempo real."
+
+dependencies:
+  - sharepoint-list: "SGI_Aprobaciones"
+  - sharepoint-list: "SGI_Alertas"
+  - component: "sharePointService"
+  - page: "ApprovalConsole"
+  - route: "/aprobaciones"
+
+acceptance_criteria:
+  - id: AC-001
+    title: "Interceptación de Escrituras y Creación de Solicitudes"
+    given: "Un usuario no Administrador/Desarrollador intenta realizar una acción de escritura (crear, editar, eliminar) en KPIs, Procesos, Riesgos, Glosario, SIPOC o Documentación"
+    when: "Se envía el formulario"
+    then: "La escritura directa es bloqueada/interceptada, y se registra una solicitud de aprobación en estado 'Pendiente' en la lista SGI_Aprobaciones, conteniendo la información en formato JSON."
+
+  - id: AC-002
+    title: "Manejo de Carga de Documentos Binarios en Aprobación"
+    given: "Un usuario sube un archivo binario a la biblioteca de documentos"
+    when: "Se intercepta la creación del documento"
+    then: "El archivo binario se carga inmediatamente en una ubicación temporal (carpeta 'Gestión Documental/Pendientes_Aprobacion/') en SharePoint. La solicitud de aprobación en SGI_Aprobaciones registra la ruta temporal y su respectiva metadata."
+
+  - id: AC-003
+    title: "Consola de Aprobaciones y Lógica de Aprobadores"
+    given: "Un usuario con rol de Administrador, Desarrollador o Dueño de Proceso accede a /aprobaciones"
+    when: "Visualiza la lista de solicitudes pendientes"
+    then: "1) Los Administradores y Desarrolladores pueden ver y resolver todas las solicitudes. 2) Los Dueños de Proceso solo pueden ver y resolver solicitudes relacionadas con sus áreas correspondientes (P-SGI-07 para Riesgos, P-SGI-04 para KPIs, P-SGI-01 para Procesos/Glosario/SIPOC/Documentación)."
+
+  - id: AC-004
+    title: "Resolución de Solicitudes (Aprobación y Rechazo)"
+    given: "Un aprobador autorizado decide resolver una solicitud pendiente"
+    when: "Hace clic en 'Aprobar' o 'Rechazar' en la consola, opcionalmente agregando comentarios"
+    then: "1) Si se aprueba, se ejecutan los cambios en el destino final. Si es un documento, se mueve de la carpeta temporal a la ruta definitiva y se actualiza su metadata. 2) Si se rechaza, el cambio no se aplica y, si es un documento, se elimina de la carpeta temporal. El estado de la solicitud pasa a 'Aprobado' o 'Rechazado' con la fecha, aprobador y comentarios correspondientes."
+
+  - id: AC-005
+    title: "Sistema de Alertas y Campana de Notificaciones"
+    given: "Se genera un cambio en el estado de una solicitud o se crea una nueva"
+    when: "El sistema actualiza la base de datos de alertas SGI_Alertas"
+    then: "1) Se notifica en tiempo real en la UI del Header (campana con contador visual) al Dueño del proceso (si hay una nueva solicitud pendiente) o al solicitante (cuando se aprueba/rechaza). 2) La campana permite listar las últimas notificaciones, marcarlas como leídas y navegar al enlace correspondiente."
+
+priority: "P0"
+owner: "dev-team"
+version: "1.0"

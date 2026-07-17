@@ -1,0 +1,30 @@
+feature: "Gestión de Tipo y Estado de Procesos"
+description: "Añade el campo Tipo de Proceso al formulario CRUD de procesos, mapea los campos sgi_tipoProceso y sgi_Estado en las lecturas/escrituras de SharePoint Online, y corrige el fallo al guardar claims de usuario en sgi_DuenoProceso filtrando valores inválidos como 'Sin asignar'."
+
+dependencies:
+  - sharepoint-list: "SGI_MaestraProceso"
+  - component: "ProcessManagement"
+  - service: "sharePointService"
+
+acceptance_criteria:
+  - id: AC-001
+    title: "Campo Tipo de Proceso en Formulario"
+    given: "El usuario abre el formulario de Nuevo Proceso o Editar Proceso"
+    when: "Se carga la interfaz"
+    then: "Se muestra un selector (Dropdown) para Tipo de Proceso con las opciones: Estratégico, Operativo, Apoyo."
+
+  - id: AC-002
+    title: "Filtrado de Claims de Dueño de Proceso"
+    given: "El usuario guarda un proceso con responsable en 'Sin asignar' o vacío"
+    when: "Se genera el payload para SharePoint"
+    then: "Se descartan valores no válidos de correo y se evita enviar claims corruptos como i:0#.f|membership|sin asignar."
+
+  - id: AC-003
+    title: "Persistencia de Tipo y Estado"
+    given: "El usuario guarda o edita un proceso"
+    when: "Se ejecuta la petición REST o SDK"
+    then: "Los valores de sgi_tipoProceso y sgi_Estado se guardan con el formato exacto en SharePoint Online (ej: Estratégico y Activo)."
+
+priority: "P0"
+owner: "dev-team"
+version: "1.0"

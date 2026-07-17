@@ -1,0 +1,43 @@
+feature: "Fase 3: Registro de Actividad (Log de Transacciones)"
+description: "Implementa el registro automático (logs) de operaciones de escritura (Crear, Modificar, Eliminar, Subir) para Procesos, KPIs, Mediciones, Riesgos, Glosario y Documentos; y expone un panel administrativo (/bitacora) restringido a Administradores y Desarrolladores."
+
+dependencies:
+  - sharepoint-list: "SGI_Bitacora"
+  - component: "sharePointService"
+  - page: "ActivityLogs"
+  - route: "/bitacora"
+
+acceptance_criteria:
+  - id: AC-001
+    title: "Registro Centralizado de Transacciones"
+    given: "Cualquier usuario realiza una acción de escritura exitosa en el portal (crear/editar/borrar proceso, kpi, riesgo, glosario o documento, o registrar medición)"
+    when: "Se completa la operación en SharePoint o en base de datos emulada"
+    then: "Se registra de forma transparente una entrada en SGI_Bitacora con los campos: usuario (nombre + email), acción (Crear/Modificar/Eliminar/Subir), elemento (KPI/Medición/Proceso/Riesgo/Glosario/Documento), detalle (texto descriptivo del cambio) y la fecha del evento."
+
+  - id: AC-002
+    title: "Persistencia de Auditoría en Desarrollo"
+    given: "El portal se ejecuta en modo de desarrollo local (VITE_USE_MOCK_DATA=true o sin sesión MSAL)"
+    when: "Se ejecuta una acción de escritura"
+    then: "El sistema almacena el registro en localStorage (sgi_activity_logs) de forma que los logs persistan y sigan estando visibles tras refrescar la página."
+
+  - id: AC-003
+    title: "Acceso y Visibilidad Restringida de Bitácora"
+    given: "Un usuario inicia sesión en el portal"
+    when: "Se evalúa la visibilidad de la Bitácora de Cambios"
+    then: "1) El enlace a '/bitacora' solo se renderiza en la barra de navegación lateral (Sidebar) para los roles de Administrador y Desarrollador; 2) Si un usuario estándar o dueño de proceso intenta navegar directamente a '/bitacora', se le deniega el acceso mediante una pantalla elegante de Acceso No Autorizado."
+
+  - id: AC-004
+    title: "Búsqueda y Filtrado en la Vista de Bitácora"
+    given: "Un administrador se encuentra en la página de Bitácora de Cambios (/bitacora)"
+    when: "Usa el buscador o el dropdown de categorías"
+    then: "La tabla de logs filtra de forma inmediata los registros por la coincidencia del usuario o del detalle, y/o por la categoría del elemento seleccionado (KPI, Proceso, Riesgo, etc.)."
+
+  - id: AC-005
+    title: "Aesthetics y Formato de Bitácora"
+    given: "El administrador visualiza la tabla de bitácora"
+    when: "Se cargan los logs"
+    then: "Las acciones se muestran con etiquetas (badges) de colores distintivos según la operación (Verde para Crear/Subir, Rojo para Eliminar, y Azul para Modificaciones) y la fecha se presenta en formato local con hora legible."
+
+priority: "P0"
+owner: "dev-team"
+version: "1.0"
