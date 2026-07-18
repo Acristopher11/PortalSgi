@@ -1,3 +1,4 @@
+import { supabase } from '../lib/supabaseClient';
 import * as processRepo from '../repositories/processRepository';
 import * as kpiRepo from '../repositories/kpiRepository';
 import * as riskRepo from '../repositories/riskRepository';
@@ -265,6 +266,40 @@ class SharePointServiceFacade {
 
   async deleteCorrectiveAction(id: string | number, token?: string): Promise<void> {
     return correctiveActionRepo.deleteCorrectiveActionItem(id, token);
+  }
+
+  // Quality Policy Statement (SaaS config)
+  async getQualityPolicyStatement(): Promise<string> {
+    const { data, error } = await supabase
+      .from('organizacion')
+      .select('config')
+      .eq('id', '1')
+      .single();
+
+    if (error || !data) {
+      return 'Nuestra organización está comprometida con los siguientes lineamientos y objetivos del Sistema de Gestión Integrado (SGI), asegurando el cumplimiento de los estándares internacionales de calidad y la mejora continua en todos nuestros procesos:';
+    }
+
+    const config = data.config as any;
+    return config?.politica_calidad || 'Nuestra organización está comprometida con los siguientes lineamientos y objetivos del Sistema de Gestión Integrado (SGI), asegurando el cumplimiento de los estándares internacionales de calidad y la mejora continua en todos nuestros procesos:';
+  }
+
+  async updateQualityPolicyStatement(statement: string): Promise<void> {
+    const { data } = await supabase
+      .from('organizacion')
+      .select('config')
+      .eq('id', '1')
+      .single();
+
+    const currentConfig = (data?.config as any) || {};
+    const newConfig = { ...currentConfig, politica_calidad: statement };
+
+    const { error } = await supabase
+      .from('organizacion')
+      .update({ config: newConfig })
+      .eq('id', '1');
+
+    if (error) throw error;
   }
 
   // Helper Conversion

@@ -282,44 +282,10 @@ export const Sidebar: React.FC = () => {
       </div>
 
       <div className={styles.footer}>
-        {/* User Identity Card */}
-        {displayName && (
-          sidebarOpen ? (
-            <div className={styles.userCard}>
-              <div className={styles.avatarCircle}>
-                {userInitials}
-              </div>
-              <div className={styles.userInfo}>
-                <div className={styles.userName} title={displayName}>
-                  {displayName}
-                </div>
-                <div className={styles.userEmail} title={email}>
-                  {email}
-                </div>
-                <div 
-                  className={styles.roleBadge} 
-                  style={{ backgroundColor: userRoleColor }}
-                >
-                  {userRoleLabel}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div 
-              className={styles.userCardCollapsed} 
-              title={`${displayName} (${userRoleLabel})\n${email}`}
-            >
-              <div className={styles.avatarCircle}>
-                {userInitials}
-              </div>
-            </div>
-          )
-        )}
-
         <div
           className={styles.menuItem}
           onClick={handleLogout}
-          style={{ marginTop: '12px' }}
+          style={{ marginTop: '0px' }}
           title={!sidebarOpen ? 'Salir' : undefined}
         >
           <div style={{ minWidth: '24px', display: 'flex', justifyContent: 'center' }}>

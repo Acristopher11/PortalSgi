@@ -101,6 +101,11 @@ export const QualityPolicy: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Quality Policy Statement states
+  const [policyStatement, setPolicyStatement] = useState('');
+  const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
+  const [editPolicyText, setEditPolicyText] = useState('');
+
   // Dialog states
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -125,6 +130,10 @@ export const QualityPolicy: React.FC = () => {
       // Sort objectives by code
       const sorted = [...data].sort((a, b) => a.codigo.localeCompare(b.codigo, 'es', { numeric: true }));
       setObjectives(sorted);
+
+      // Load policy statement
+      const statement = await sharePointService.getQualityPolicyStatement();
+      setPolicyStatement(statement);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar los objetivos de calidad.');
     } finally {
@@ -249,8 +258,22 @@ export const QualityPolicy: React.FC = () => {
         </div>
       ) : activeTab === 'declaracion' ? (
         <div className={styles.card}>
-          <div className={styles.introText}>
-            Nuestra organización está comprometida con los siguientes lineamientos y objetivos del Sistema de Gestión Integrado (SGI), asegurando el cumplimiento de los estándares internacionales de calidad y la mejora continua en todos nuestros procesos:
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: '12px' }}>
+            <div className={styles.introText} style={{ marginBottom: 0, flex: 1 }}>
+              {policyStatement}
+            </div>
+            {canManage && (
+              <Button 
+                size="small" 
+                icon={<EditRegular />} 
+                onClick={() => {
+                  setEditPolicyText(policyStatement);
+                  setIsPolicyDialogOpen(true);
+                }}
+              >
+                Editar Declaración
+              </Button>
+            )}
           </div>
 
           <div className={styles.grid}>
@@ -409,6 +432,62 @@ export const QualityPolicy: React.FC = () => {
                 {submitting ? 'Eliminando...' : 'Eliminar'}
               </Button>
             </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
+
+      {/* Policy Edit Dialog */}
+      <Dialog open={isPolicyDialogOpen} onOpenChange={(_, data) => setIsPolicyDialogOpen(data.open)}>
+        <DialogSurface style={{ maxWidth: '600px', width: '100%' }}>
+          <DialogBody>
+            <DialogTitle>Editar Declaración de la Política</DialogTitle>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              setSubmitting(true);
+              setFormError(null);
+              try {
+                await sharePointService.updateQualityPolicyStatement(editPolicyText);
+                setPolicyStatement(editPolicyText);
+                setIsPolicyDialogOpen(false);
+              } catch (err) {
+                setFormError(err instanceof Error ? err.message : 'Error al guardar la declaración.');
+              } finally {
+                setSubmitting(false);
+              }
+            }}>
+              <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+                <Label htmlFor="policy-text">Declaración de la Política de Calidad y Antisoborno:</Label>
+                <textarea
+                  id="policy-text"
+                  value={editPolicyText}
+                  onChange={(e) => setEditPolicyText(e.target.value)}
+                  rows={6}
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    borderRadius: '4px',
+                    border: '1px solid #D2D0CE',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    resize: 'vertical'
+                  }}
+                  required
+                />
+                {formError && (
+                  <div style={{ padding: '8px 12px', backgroundColor: '#FDE7E9', color: '#DC143C', borderRadius: '4px', border: '1px solid #FBC2C4', fontSize: '12px' }}>
+                    {formError}
+                  </div>
+                )}
+              </DialogContent>
+              <DialogActions style={{ marginTop: '16px' }}>
+                <Button appearance="secondary" onClick={() => setIsPolicyDialogOpen(false)} disabled={submitting}>
+                  Cancelar
+                </Button>
+                <Button appearance="primary" type="submit" disabled={submitting}>
+                  {submitting ? 'Guardando...' : 'Guardar'}
+                </Button>
+              </DialogActions>
+            </form>
           </DialogBody>
         </DialogSurface>
       </Dialog>
