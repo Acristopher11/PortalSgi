@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { Spinner } from '@fluentui/react-components';
 import { useAuth } from '../../hooks/useAuth';
 
 interface ProtectedRouteProps {
@@ -17,7 +18,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requireAdminOrOwner = false,
   requireApprover = false,
 }) => {
-  const { isAuthenticated, isAdmin, isDeveloper, isProcessOwner, isEncargado } = useAuth();
+  const { isAuthenticated, isAdmin, isDeveloper, isProcessOwner, isEncargado, loadingUser } = useAuth();
+
+  if (loadingUser) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Spinner label="Verificando sesión..." />
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
