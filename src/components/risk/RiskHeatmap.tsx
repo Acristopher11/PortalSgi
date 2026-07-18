@@ -5,11 +5,13 @@ import type { Risk } from '../../types';
 interface RiskHeatmapProps {
   risks: Risk[];
   title?: string;
+  activeRisk?: Risk | null;
 }
 
 export const RiskHeatmap: React.FC<RiskHeatmapProps> = ({ 
   risks, 
-  title = 'Mapa de Calor de Riesgos (Impacto vs. Probabilidad)' 
+  title = 'Mapa de Calor de Riesgos (Impacto vs. Probabilidad)',
+  activeRisk
 }) => {
   const probabilityScale = [1, 2, 3];
   const impactScale = [3, 2, 1]; // vertical axis
@@ -78,6 +80,7 @@ export const RiskHeatmap: React.FC<RiskHeatmapProps> = ({
                   const count = risks.filter(r => r.probabilidad === p && r.impacto === i).length;
                   const score = p * i;
                   const cellColor = getScoreColor(score);
+                  const isHighlighted = activeRisk && activeRisk.probabilidad === p && activeRisk.impacto === i;
                   
                   return (
                     <div
@@ -92,11 +95,16 @@ export const RiskHeatmap: React.FC<RiskHeatmapProps> = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'relative',
-                        boxShadow: 'inset 0 0 10px rgba(0,0,0,0.15)',
-                        transition: 'transform 0.2s',
+                        boxShadow: isHighlighted 
+                          ? '0 0 12px #0078D4, inset 0 0 10px rgba(0,0,0,0.15)' 
+                          : 'inset 0 0 10px rgba(0,0,0,0.15)',
+                        border: isHighlighted ? '3px solid #0078D4' : 'none',
+                        transform: isHighlighted ? 'scale(1.05)' : 'none',
+                        zIndex: isHighlighted ? 10 : 1,
+                        transition: 'all 0.2s ease-in-out',
                         cursor: 'default',
                       }}
-                      title={`Score: ${score} | Riesgos: ${count}`}
+                      title={`Score: ${score} | Riesgos: ${count}${isHighlighted ? ' (Contiene el riesgo seleccionado)' : ''}`}
                     >
                       <span style={{ fontSize: '20px', fontWeight: 'bold' }}>{count}</span>
                       <span style={{ fontSize: '10px', opacity: 0.8 }}>Score {score}</span>

@@ -27,21 +27,40 @@ function mapToKPI(row: any): KPI {
   const processObj = row.procesos;
   const areaName = processObj ? (processObj.nombre || processObj.codigo) : 'General';
 
+  const dbMediciones = row.mediciones || [];
+  const mappedMediciones = dbMediciones.map((m: any) => {
+    let mVal = m.valor !== null ? Number(m.valor) : null;
+    if (mVal !== null && mVal > 0 && mVal <= 1) {
+      mVal = mVal * 100;
+    }
+    return {
+      id: String(m.id),
+      kpi_id: String(m.indicador_id),
+      valor: mVal,
+      fecha: new Date(m.fecha || m.created_at || Date.now()),
+      comentarios: m.comentarios,
+      mes: m.mes,
+      anio: m.anio,
+      trimestre: m.trimestre,
+    };
+  });
+
   return {
     id: String(row.id),
     nombre: row.nombre ?? '',
     descripcion: row.descripcion ?? '',
     meta: meta,
-    valor_actual: row.resultado_actual,
+    valor_actual: actual,
     unidad: row.unidad || '%',
     responsable: row.responsable || 'Sin asignar',
     area: areaName,
     fecha_ultima_actualizacion: new Date(row.updated_at || row.created_at || Date.now()),
-    estado: calculateKPIStatus(row.resultado_actual, row.meta),
+    estado: calculateKPIStatus(actual, meta),
     tendencia: 'stable',
     frequency: 'quarterly',
     processId: row.proceso_id ? String(row.proceso_id) : undefined,
     periodicidad: row.periodicidad || 'Trimestral',
+    mediciones: mappedMediciones,
   };
 }
 
@@ -49,7 +68,7 @@ export async function getAllKPIs(token?: string): Promise<KPI[]> {
   try {
     const { data, error } = await supabase
       .from('indicadores')
-      .select('*, procesos(nombre, codigo)')
+      .select('*, procesos(nombre, codigo), mediciones(*)')
       .eq('organizacion_id', DEFAULT_ORG_ID);
 
     if (error) {

@@ -42,6 +42,52 @@ export const RiskManagement: React.FC = () => {
   const [selectedRisk, setSelectedRisk] = useState<Risk | null>(null);
   const [processes, setProcesses] = useState<Process[]>([]);
 
+  // Quick Edit States
+  const [activeRiskId, setActiveRiskId] = useState<string | null>(null);
+  
+  const activeRisk = useMemo(() => {
+    return risks.find(r => r.id === activeRiskId) || null;
+  }, [risks, activeRiskId]);
+
+  const handleQuickUpdate = async (risk: Risk, field: 'probabilidad' | 'impacto', value: number) => {
+    try {
+      const token = await getSharePointToken();
+      const updatedRisk = {
+        ...risk,
+        [field]: value,
+      };
+      
+      const payload = {
+        nombre: updatedRisk.nombre,
+        descripcion: updatedRisk.descripcion,
+        probabilidad: updatedRisk.probabilidad,
+        impacto: updatedRisk.impacto,
+        responsable: updatedRisk.responsable,
+        proceso_asociado: updatedRisk.proceso_asociado,
+        procesoId: updatedRisk.procesoId,
+        estado: updatedRisk.estado,
+        tipo_riesgo: updatedRisk.tipo_riesgo,
+        plan_mitigacion: updatedRisk.plan_mitigacion,
+        control: updatedRisk.control,
+        origen: updatedRisk.origen,
+        consecuencia: updatedRisk.consecuencia,
+        vp: updatedRisk.probabilidad,
+        vi: updatedRisk.impacto,
+      };
+      
+      await sharePointService.updateRisk(risk.id, payload, token);
+      
+      // Update store
+      const updatedRisksList = risks.map(r => r.id === risk.id ? {
+        ...r,
+        [field]: value as (1 | 2 | 3),
+      } : r);
+      setRisks(updatedRisksList);
+    } catch (err) {
+      console.error('Error updating risk quickly:', err);
+    }
+  };
+
   const allowedProcesses = useMemo(() => {
     if (isDeveloper || isAdmin) return processes;
     return processes.filter(p => p.responsableEmails?.map(e => e.toLowerCase()).includes(email.toLowerCase()));
@@ -296,7 +342,69 @@ export const RiskManagement: React.FC = () => {
       ) : (
         <>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '24px', marginBottom: '12px' }}>
-            <RiskHeatmap risks={filteredRisks} />
+            <RiskHeatmap risks={filteredRisks} activeRisk={activeRisk} />
+            
+            {activeRisk ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', backgroundColor: '#fff', padding: '24px', borderRadius: '8px', border: '1px solid #E8EAED', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <Text weight="bold" size={400} style={{ color: 'var(--color-midnight-blue, #001F3F)' }}>
+                  Ajuste Rápido del Riesgo Seleccionado
+                </Text>
+                <Text size={200} style={{ color: '#475569', fontWeight: 'semibold' }}>
+                  {activeRisk.nombre}
+                </Text>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
+                  <div>
+                    <Label style={{ fontWeight: 'bold', fontSize: '12px' }}>Probabilidad (VP):</Label>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                      {([1, 2, 3] as const).map(val => (
+                        <Button
+                          key={val}
+                          appearance={activeRisk.probabilidad === val ? 'primary' : 'outline'}
+                          onClick={() => handleQuickUpdate(activeRisk, 'probabilidad', val)}
+                          size="small"
+                        >
+                          {val === 1 ? 'Baja (1)' : val === 2 ? 'Moderada (2)' : 'Alta (3)'}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label style={{ fontWeight: 'bold', fontSize: '12px' }}>Impacto (VI):</Label>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                      {([1, 2, 3] as const).map(val => (
+                        <Button
+                          key={val}
+                          appearance={activeRisk.impacto === val ? 'primary' : 'outline'}
+                          onClick={() => handleQuickUpdate(activeRisk, 'impacto', val)}
+                          size="small"
+                        >
+                          {val === 1 ? 'Bajo (1)' : val === 2 ? 'Moderado (2)' : 'Alto (3)'}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px' }}>
+                  <Text size={100} style={{ color: '#64748B' }}>
+                    * Los cambios actualizan el mapa en tiempo real.
+                  </Text>
+                  <Button size="small" appearance="subtle" onClick={() => setActiveRiskId(null)}>
+                    Limpiar Selección
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC', padding: '24px', borderRadius: '8px', border: '1px dashed #D0D9E0', minHeight: '180px', textAlign: 'center' }}>
+                <Text size={300} style={{ color: '#64748B', fontWeight: 'semibold' }}>
+                  Ajuste Rápido Interactivo
+                </Text>
+                <Text size={100} style={{ color: '#94A3B8', marginTop: '6px', maxWidth: '300px', lineHeight: '1.4' }}>
+                  Haz clic sobre la fila de cualquier riesgo en la tabla de abajo para seleccionarlo y ajustar sus coordenadas directamente en esta sección.
+                </Text>
+              </div>
+            )}
           </div>
 
           <div style={{ borderBottom: '1px solid #E8EAED', marginBottom: '8px' }}>
@@ -414,7 +522,15 @@ export const RiskManagement: React.FC = () => {
                   }
 
                   return (
-                    <TableRow key={risk.id} style={{ backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F8FAFC' }}>
+                    <TableRow 
+                      key={risk.id} 
+                      style={{ 
+                        backgroundColor: activeRiskId === risk.id ? '#E2F1FF' : (index % 2 === 0 ? '#FFFFFF' : '#F8FAFC'),
+                        cursor: 'pointer',
+                        borderLeft: activeRiskId === risk.id ? '4px solid #0078D4' : 'none'
+                      }}
+                      onClick={() => setActiveRiskId(risk.id === activeRiskId ? null : risk.id)}
+                    >
                       <TableCell style={{ fontWeight: 'semibold', width: '25%', minWidth: '220px' }}>{risk.nombre}</TableCell>
                       <TableCell>{risk.tipo_riesgo || 'Operacional'}</TableCell>
                       <TableCell>{vp}/3</TableCell>
@@ -433,21 +549,27 @@ export const RiskManagement: React.FC = () => {
                       <TableCell>{risk.proceso_asociado}</TableCell>
                       <TableCell>{risk.responsable}</TableCell>
                       {(isDeveloper || isAdmin || isProcessOwner) && (
-                        <TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
                           <div style={{ display: 'flex', gap: '8px' }}>
                             {canModifyRisk(risk) && (
                               <>
                                 <Button
                                   icon={<EditRegular />}
                                   appearance="subtle"
-                                  onClick={() => openEditDialog(risk)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openEditDialog(risk);
+                                  }}
                                   title="Editar Riesgo"
                                 />
                                 <Button
                                   icon={<DeleteRegular />}
                                   appearance="subtle"
                                   style={{ color: '#DC143C' }}
-                                  onClick={() => openConfirmDelete(risk)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openConfirmDelete(risk);
+                                  }}
                                   title="Eliminar Riesgo"
                                 />
                               </>
