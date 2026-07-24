@@ -8,9 +8,11 @@ import {
   makeStyles,
   shorthands,
   Spinner,
+  tokens,
 } from '@fluentui/react-components';
-import { LockClosedRegular, MailRegular } from '@fluentui/react-icons';
+import { LockClosedRegular, MailRegular, PersonRegular } from '@fluentui/react-icons';
 import { signIn } from '../lib/auth';
+import { supabase } from '../lib/supabaseClient';
 
 const useStyles = makeStyles({
   container: {
@@ -18,7 +20,7 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    backgroundColor: '#f3f4f6',
+    backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.padding('24px'),
   },
   card: {
@@ -27,10 +29,11 @@ const useStyles = makeStyles({
     gap: '20px',
     width: '100%',
     maxWidth: '420px',
-    backgroundColor: '#ffffff',
+    backgroundColor: tokens.colorNeutralBackground2,
     ...shorthands.padding('40px', '32px'),
     ...shorthands.borderRadius('12px'),
-    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+    boxShadow: 'var(--shadow-card, 0 4px 12px rgba(0, 0, 0, 0.08))',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
   },
   logoSection: {
     display: 'flex',
@@ -40,7 +43,7 @@ const useStyles = makeStyles({
     marginBottom: '8px',
   },
   title: {
-    color: '#1e293b',
+    color: tokens.colorNeutralForeground1,
   },
   form: {
     display: 'flex',
@@ -55,21 +58,29 @@ const useStyles = makeStyles({
     ...shorthands.border('1px', 'solid', '#fca5a5'),
     fontSize: '13px',
   },
+  success: {
+    color: '#15803d',
+    backgroundColor: '#f0fdf4',
+    ...shorthands.padding('10px', '12px'),
+    ...shorthands.borderRadius('6px'),
+    ...shorthands.border('1px', 'solid', '#bbf7d0'),
+    fontSize: '13px',
+  },
   input: {
     width: '100%',
   },
   button: {
     marginTop: '8px',
     height: '40px',
-    backgroundColor: '#1E3A5F',
+    backgroundColor: tokens.colorBrandBackground,
     color: '#ffffff',
     '&:hover': {
-      backgroundColor: '#152943',
+      backgroundColor: tokens.colorBrandBackgroundHover,
       color: '#ffffff',
     },
   },
   subtitle: {
-    color: '#64748b',
+    color: tokens.colorNeutralForeground2,
     textAlign: 'center',
     marginBottom: '16px',
   },
@@ -78,29 +89,81 @@ const useStyles = makeStyles({
 export const Login: React.FC = () => {
   const styles = useStyles();
   const navigate = useNavigate();
+  
+  // Login & Register toggle state
+  const [isRegistering, setIsRegistering] = useState(false);
+  
+  // Fields
+  const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Loading & Messages
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) {
-      setError('Por favor, ingresa tu correo y contraseña.');
-      return;
-    }
+    setError(null);
+    setSuccessMessage(null);
 
-    try {
-      setLoading(true);
-      setError(null);
-      await signIn(email.trim(), password);
-      // Success: redirect to dashboard
-      navigate('/dashboard');
-    } catch (err: any) {
-      console.error('[LoginError]', err);
-      setError(err.message || 'Error al iniciar sesión. Verifica tus credenciales.');
-    } finally {
-      setLoading(false);
+    if (isRegistering) {
+      if (!nombre.trim() || !email.trim() || !password || !confirmPassword) {
+        setError('Por favor, completa todos los campos.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError('Las contraseñas no coinciden.');
+        return;
+      }
+      if (password.length < 6) {
+        setError('La contraseña debe tener al menos 6 caracteres.');
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: email.trim().toLowerCase(),
+          password: password,
+          options: {
+            data: {
+              nombre: nombre.trim(),
+            }
+          }
+        });
+        if (signUpError) throw signUpError;
+        
+        setSuccessMessage('Registro exitoso. Tu cuenta está siendo creada.');
+        
+        // Supabase logs the user in automatically on signup (if email confirmation is disabled/auto).
+        // Wait 1.5 seconds for Supabase to sync, then navigate to dashboard
+        setTimeout(() => {
+          navigate('/dashboard', { viewTransition: true });
+        }, 1500);
+
+      } catch (err: any) {
+        console.error('[SignUpError]', err);
+        setError(err.message || 'Ocurrió un error durante el registro. Intenta de nuevo.');
+        setLoading(false);
+      }
+    } else {
+      if (!email.trim() || !password.trim()) {
+        setError('Por favor, ingresa tu correo y contraseña.');
+        return;
+      }
+
+      try {
+        setLoading(true);
+        await signIn(email.trim(), password);
+        navigate('/dashboard', { viewTransition: true });
+      } catch (err: any) {
+        console.error('[LoginError]', err);
+        setError(err.message || 'Error al iniciar sesión. Verifica tus credenciales.');
+        setLoading(false);
+      }
     }
   };
 
@@ -109,16 +172,31 @@ export const Login: React.FC = () => {
       <div className={styles.card}>
         <div className={styles.logoSection}>
           <Text className={styles.title} size={800} weight="bold">
-            Portal SGI
+            GEMS
           </Text>
           <Text className={styles.subtitle} size={300}>
-            Sistema de Gestión Integrado SaaS
+            Motor Universal de Cumplimiento y Excelencia
           </Text>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
+        {successMessage && <div className={styles.success}>{successMessage}</div>}
 
         <form className={styles.form} onSubmit={handleSubmit}>
+          {isRegistering && (
+            <Field label="Nombre Completo" required>
+              <Input
+                type="text"
+                className={styles.input}
+                value={nombre}
+                onChange={(e, data) => setNombre(data.value)}
+                placeholder="Juan Pérez"
+                contentBefore={<PersonRegular />}
+                disabled={loading}
+              />
+            </Field>
+          )}
+
           <Field label="Correo Electrónico" required>
             <Input
               type="email"
@@ -143,15 +221,47 @@ export const Login: React.FC = () => {
             />
           </Field>
 
+          {isRegistering && (
+            <Field label="Confirmar Contraseña" required>
+              <Input
+                type="password"
+                className={styles.input}
+                value={confirmPassword}
+                onChange={(e, data) => setConfirmPassword(data.value)}
+                placeholder="••••••••"
+                contentBefore={<LockClosedRegular />}
+                disabled={loading}
+              />
+            </Field>
+          )}
+
           <Button
             type="submit"
             className={styles.button}
             disabled={loading}
             icon={loading ? <Spinner size="tiny" /> : undefined}
           >
-            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+            {loading 
+              ? (isRegistering ? 'Creando cuenta...' : 'Iniciando sesión...') 
+              : (isRegistering ? 'Registrarse y Solicitar Acceso' : 'Iniciar Sesión')}
           </Button>
         </form>
+
+        <div style={{ marginTop: '8px', textAlign: 'center' }}>
+          <Button
+            appearance="subtle"
+            onClick={() => {
+              setIsRegistering(!isRegistering);
+              setError(null);
+              setSuccessMessage(null);
+            }}
+            disabled={loading}
+          >
+            {isRegistering
+              ? '¿Ya tienes una cuenta? Inicia Sesión'
+              : '¿No tienes una cuenta? Regístrate aquí'}
+          </Button>
+        </div>
       </div>
     </div>
   );

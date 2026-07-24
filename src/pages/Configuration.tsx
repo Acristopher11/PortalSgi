@@ -10,6 +10,7 @@ import {
   HistoryRegular,
   WrenchRegular,
   SettingsRegular,
+  FlowRegular,
 } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
@@ -73,10 +74,17 @@ export const Configuration: React.FC = () => {
 
   const configOptions = [
     {
+      id: 'usuarios',
+      title: 'Gestión de Usuarios',
+      description: 'Crea, edita y administra los usuarios, roles y áreas asociadas en el sistema.',
+      icon: <PeopleRegular />,
+      path: '/usuarios',
+    },
+    {
       id: 'gestion-flujos',
       title: 'Gestión de Flujos',
-      description: 'Configura y administra los permisos y accesos de los usuarios en el sistema.',
-      icon: <PeopleRegular />,
+      description: 'Configura y administra los flujos de aprobación y procesos asociados.',
+      icon: <FlowRegular />,
       path: '/gestion-flujos',
     },
     {
@@ -111,7 +119,7 @@ export const Configuration: React.FC = () => {
           <div 
             key={option.id} 
             className={styles.card} 
-            onClick={() => navigate(option.path)}
+            onClick={() => navigate(option.path, { viewTransition: true })}
           >
             <div className={styles.cardIcon}>
               {option.icon}

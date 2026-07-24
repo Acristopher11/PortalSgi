@@ -20,6 +20,7 @@ import {
   Dropdown,
   Option,
   Label,
+  Badge,
 } from '@fluentui/react-components';
 import { ShareRegular, DocumentAddRegular, WarningRegular, ArrowLeftRegular } from '@fluentui/react-icons';
 import { useKPIStore } from '../store';
@@ -283,7 +284,7 @@ export const KPIReports: React.FC = () => {
           <Button 
             icon={<ArrowLeftRegular />} 
             appearance="subtle" 
-            onClick={() => navigate('/kpis-admin')}
+            onClick={() => navigate('/kpis-admin', { viewTransition: true })}
             title="Volver a Indicadores"
           />
           <Text size={600} weight="bold">
@@ -324,12 +325,20 @@ export const KPIReports: React.FC = () => {
                   {row.actual !== null ? `${row.actual.toFixed(1)}%` : 'SIN DATOS'}
                 </TableCell>
                 <TableCell>
-                  <span style={{ 
-                    fontWeight: 'bold', 
-                    color: row.estado === 'on_track' ? '#107C10' : row.estado === 'at_risk' ? '#FFB900' : row.estado === 'off_track' ? '#DC143C' : '#7A8B9E' 
-                  }}>
+                  <Badge
+                    appearance="tint"
+                    color={
+                      row.estado === 'on_track'
+                        ? 'success'
+                        : row.estado === 'at_risk'
+                        ? 'warning'
+                        : row.estado === 'off_track'
+                        ? 'danger'
+                        : 'subtle'
+                    }
+                  >
                     {row.estado === 'no_data' ? 'SIN DATOS' : row.estado.replace('_', ' ').toUpperCase()}
-                  </span>
+                  </Badge>
                 </TableCell>
                 <TableCell>{row.responsable}</TableCell>
                 <TableCell>

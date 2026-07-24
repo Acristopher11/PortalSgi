@@ -17,6 +17,7 @@ import {
   DialogActions,
   Input,
   Label,
+  Badge,
 } from '@fluentui/react-components';
 import { 
   ArrowLeftRegular, 
@@ -138,7 +139,7 @@ export const ProcessDetail: React.FC = () => {
   const getKPIStatusColor = (status: string) => {
     switch (status) {
       case 'on_track': return '#107C10'; // Verde
-      case 'at_risk': return '#FFB900'; // Amarillo
+      case 'at_risk': return '#9a6e00'; // Amarillo oscuro de alto contraste
       case 'off_track': return '#DC143C'; // Rojo
       default: return '#8A8886'; // Gris
     }
@@ -155,7 +156,7 @@ export const ProcessDetail: React.FC = () => {
 
   const getRiskScoreColor = (score: number) => {
     if (score >= 6) return '#DC143C'; // Alto
-    if (score >= 4) return '#FFB900'; // Moderado
+    if (score >= 4) return '#9a6e00'; // Moderado (alto contraste)
     return '#107C10'; // Bajo
   };
 
@@ -252,7 +253,7 @@ export const ProcessDetail: React.FC = () => {
   if (error || !process) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '24px' }}>
-        <Button icon={<ArrowLeftRegular />} onClick={() => navigate('/procesos')}>
+        <Button icon={<ArrowLeftRegular />} onClick={() => navigate('/procesos', { viewTransition: true })}>
           Volver a procesos
         </Button>
         <div style={{ padding: '16px', backgroundColor: '#FDE7E9', color: '#DC143C', borderRadius: '8px', border: '1px solid #FBC2C4' }}>
@@ -280,7 +281,7 @@ export const ProcessDetail: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Button icon={<ArrowLeftRegular />} appearance="subtle" onClick={() => navigate('/procesos')} title="Volver al listado" />
+            <Button icon={<ArrowLeftRegular />} appearance="subtle" onClick={() => navigate('/procesos', { viewTransition: true })} title="Volver al listado" />
             <Text size={300} style={{ color: 'var(--color-text-secondary, #636F7D)', fontWeight: 'semibold' }}>{process.codigo}</Text>
           </div>
           <Text size={700} weight="bold" style={{ color: 'var(--color-midnight-blue, #001F3F)', marginLeft: '40px' }}>
@@ -293,10 +294,10 @@ export const ProcessDetail: React.FC = () => {
           <Button icon={<ClipboardRegular />} onClick={() => setShowActivities(prev => !prev)} appearance={showActivities ? "primary" : undefined}>
             Descripción de Actividades
           </Button>
-          <Button icon={<DocumentRegular />} onClick={() => navigate(`/documentos?procesoId=${process.id}`)}>
+          <Button icon={<DocumentRegular />} onClick={() => navigate(`/documentos?procesoId=${process.id}`, { viewTransition: true })}>
             Documentos Relacionados
           </Button>
-          <Button icon={<BookRegular />} onClick={() => navigate('/glosario')}>
+          <Button icon={<BookRegular />} onClick={() => navigate('/glosario', { viewTransition: true })}>
             Glosario SGI
           </Button>
         </div>
@@ -341,13 +342,13 @@ export const ProcessDetail: React.FC = () => {
           Diagrama SIPOC del Proceso
         </Text>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', overflowX: 'auto', minWidth: '800px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px', overflowX: 'auto', minWidth: '800px' }}>
           {/* S - Suppliers */}
           <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '16px' }}>
             <div style={{ backgroundColor: 'var(--color-midnight-blue, #001F3F)', color: 'white', fontWeight: 'bold', padding: '6px', borderRadius: '4px', textAlign: 'center', marginBottom: '16px', fontSize: '14px' }}>
               S - Proveedores
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {proveedoresList.map((val, idx) => (
                 <div key={`s-${idx}`} style={{ backgroundColor: 'white', border: '1px solid #E2E8F0', padding: '8px', borderRadius: '4px', fontSize: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.01)' }}>
                   {val}
@@ -362,7 +363,7 @@ export const ProcessDetail: React.FC = () => {
             <div style={{ backgroundColor: 'var(--color-midnight-blue, #001F3F)', color: 'white', fontWeight: 'bold', padding: '6px', borderRadius: '4px', textAlign: 'center', marginBottom: '16px', fontSize: '14px' }}>
               I - Entradas
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {insumosList.map((val, idx) => (
                 <div key={`i-${idx}`} style={{ backgroundColor: 'white', border: '1px solid #E2E8F0', padding: '8px', borderRadius: '4px', fontSize: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.01)' }}>
                   {val}
@@ -377,7 +378,7 @@ export const ProcessDetail: React.FC = () => {
             <div style={{ backgroundColor: 'var(--color-caribbean-red, #DC143C)', color: 'white', fontWeight: 'bold', padding: '6px', borderRadius: '4px', textAlign: 'center', marginBottom: '16px', fontSize: '14px' }}>
               P - Actividades
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {actividadesList.map((val, idx) => (
                 <div key={`p-${idx}`} style={{ backgroundColor: 'white', border: '1px solid #FBC2C4', padding: '8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'semibold', boxShadow: '0 1px 2px rgba(0,0,0,0.01)', textAlign: 'center' }}>
                   {val}
@@ -392,7 +393,7 @@ export const ProcessDetail: React.FC = () => {
             <div style={{ backgroundColor: 'var(--color-midnight-blue, #001F3F)', color: 'white', fontWeight: 'bold', padding: '6px', borderRadius: '4px', textAlign: 'center', marginBottom: '16px', fontSize: '14px' }}>
               O - Salidas
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {productosList.map((val, idx) => (
                 <div key={`o-${idx}`} style={{ backgroundColor: 'white', border: '1px solid #E2E8F0', padding: '8px', borderRadius: '4px', fontSize: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.01)' }}>
                   {val}
@@ -407,7 +408,7 @@ export const ProcessDetail: React.FC = () => {
             <div style={{ backgroundColor: 'var(--color-midnight-blue, #001F3F)', color: 'white', fontWeight: 'bold', padding: '6px', borderRadius: '4px', textAlign: 'center', marginBottom: '16px', fontSize: '14px' }}>
               C - Clientes
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {clientesList.map((val, idx) => (
                 <div key={`c-${idx}`} style={{ backgroundColor: 'white', border: '1px solid #E2E8F0', padding: '8px', borderRadius: '4px', fontSize: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.01)' }}>
                   {val}
@@ -499,9 +500,20 @@ export const ProcessDetail: React.FC = () => {
                       <Text weight="bold" style={{ fontSize: '13px' }}>{kpi.nombre}</Text>
                       <Text size={100} style={{ color: '#64748B' }}>Meta: {kpi.meta}{kpi.unidad} | Actual: {kpi.valor_actual !== null ? `${kpi.valor_actual}${kpi.unidad}` : 'Sin registrar'}</Text>
                     </div>
-                    <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '4px 8px', borderRadius: '12px', color: 'white', backgroundColor: getKPIStatusColor(kpi.estado) }}>
+                    <Badge
+                      appearance="tint"
+                      color={
+                        kpi.estado === 'on_track'
+                          ? 'success'
+                          : kpi.estado === 'at_risk'
+                          ? 'warning'
+                          : kpi.estado === 'off_track'
+                          ? 'danger'
+                          : 'subtle'
+                      }
+                    >
                       {getKPIStatusText(kpi.estado)}
-                    </span>
+                    </Badge>
                   </div>
                 ))}
                 {kpis.length === 0 && (

@@ -1,13 +1,18 @@
-/* Variables CSS Globales - SgiPortal Institutional Theme */
+/* Variables CSS Globales - SgiPortal Google Style Theme & Glassmorphism */
 :root {
-  /* Colors */
-  --color-midnight-blue: #001F3F;
-  --color-caribbean-red: #DC143C;
+  /* Colors (Google Brand Palette) */
+  --color-midnight-blue: #1a73e8; /* Google Blue */
+  --color-caribbean-red: #ea4335; /* Google Red */
   --color-white: #FFFFFF;
   --color-bg-light: #F8F9FA;
   --color-border: #E8EAED;
   --color-text-primary: #2D3748;
   --color-text-secondary: #636F7D;
+
+  /* Glassmorphism Tokens (Light) */
+  --color-glass-bg: rgba(255, 255, 255, 0.45);
+  --color-glass-border: rgba(255, 255, 255, 0.25);
+  --backdrop-blur: blur(12px);
 
   /* Typography */
   --font-family-base: Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
@@ -19,7 +24,23 @@
   
   /* Shadows */
   --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.05);
-  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+html.dark {
+  --color-midnight-blue: #8ab4f8; /* Google Light Blue */
+  --color-caribbean-red: #f28b82; /* Google Light Red */
+  --color-white: #1E1E1E;
+  --color-bg-light: #121212;
+  --color-border: #2D3748;
+  --color-text-primary: #E2E8F0;
+  --color-text-secondary: #A0AEC0;
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.6);
+
+  /* Glassmorphism Tokens (Dark) */
+  --color-glass-bg: rgba(18, 18, 18, 0.55);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --backdrop-blur: blur(12px);
 }
 
 /* Base Reset & Setup */

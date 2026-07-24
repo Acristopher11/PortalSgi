@@ -4,6 +4,7 @@ import {
   shorthands,
   Button,
   Text,
+  tokens,
 } from '@fluentui/react-components';
 import { NavigationRegular, WeatherMoonRegular, WeatherSunnyRegular } from '@fluentui/react-icons';
 import { useUIStore } from '../../store';
@@ -15,10 +16,15 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'space-between',
     height: '48px',
-    backgroundColor: '#ffffff',
-    borderBottom: '1px solid #E8EAED',
+    backgroundColor: 'var(--color-glass-bg)',
+    backdropFilter: 'var(--backdrop-blur)',
+    WebkitBackdropFilter: 'var(--backdrop-blur)',
+    borderBottom: '1px solid var(--color-glass-border)',
     ...shorthands.padding('0px', '24px'),
-    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)',
+    boxShadow: 'var(--shadow-subtle)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
   },
   leftSection: {
     display: 'flex',
@@ -31,13 +37,13 @@ const useStyles = makeStyles({
     gap: '16px',
   },
   orgTitle: {
-    color: '#001F3F',
+    color: tokens.colorBrandForeground1,
     letterSpacing: '0.5px',
   },
   userSection: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
+    gap: '8px',
   },
   avatarCircle: {
     display: 'flex',
@@ -46,13 +52,13 @@ const useStyles = makeStyles({
     width: '28px',
     height: '28px',
     borderRadius: '50%',
-    backgroundColor: '#1E3A5F',
+    backgroundColor: tokens.colorBrandBackground,
     color: '#ffffff',
     fontWeight: 'bold',
-    fontSize: '11px',
+    fontSize: tokens.fontSizeBase200,
   },
   userName: {
-    color: '#323130',
+    color: tokens.colorNeutralForeground1,
   },
 });
 
@@ -88,7 +94,7 @@ export const Header: React.FC = () => {
           title={sidebarOpen ? 'Colapsar barra lateral' : 'Expandir barra lateral'}
         />
         <Text className={styles.orgTitle} weight="semibold" size={400}>
-          {sgiUsuario?.areaNombre || 'Portal SGI — SaaS Shell'}
+          {sgiUsuario?.areaNombre || 'GEMS — SaaS Shell'}
         </Text>
       </div>
 

@@ -205,15 +205,15 @@ async function sendApprovalEmailNotification(request: ApprovalRequest): Promise<
   const approveLink = `${portalUrl}/aprobaciones?id=${request.id}&action=Aprobado`;
   const rejectLink = `${portalUrl}/aprobaciones?id=${request.id}&action=Rechazado`;
 
-  const emailSubject = `[SGI] Aprobación Requerida: ${request.titulo}`;
+  const emailSubject = `[GEMS] Aprobación Requerida: ${request.titulo}`;
   const emailBody = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-      <div style="background-color: #001F3F; color: white; padding: 20px; text-align: center;">
-        <h2 style="margin: 0; font-size: 20px; font-weight: bold;">Portal SGI - Sistema de Gestión Integrado</h2>
+      <div style="background-color: #1a73e8; color: white; padding: 20px; text-align: center;">
+        <h2 style="margin: 0; font-size: 20px; font-weight: bold;">GEMS — Motor Universal de Cumplimiento y Excelencia</h2>
       </div>
       <div style="padding: 24px; background-color: #FFFFFF; color: #334155; line-height: 1.6;">
         <p style="font-size: 16px; margin-top: 0; font-weight: bold;">Estimado(a) Encargado(a),</p>
-        <p>Se ha registrado una solicitud de aprobación en el **Sistema de Gestión Integrado (SGI)** que requiere su revisión y decisión:</p>
+        <p>Se ha registrado una solicitud de aprobación en la plataforma **GEMS (Motor Universal de Cumplimiento y Excelencia)** que requiere su revisión y decisión:</p>
         
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0; background-color: #F8FAFC; border-radius: 6px; overflow: hidden;">
           <tr>
@@ -246,7 +246,7 @@ async function sendApprovalEmailNotification(request: ApprovalRequest): Promise<
         </div>
         
         <p style="font-size: 11px; color: #64748B; margin-top: 32px; border-top: 1px solid #E2E8F0; padding-top: 16px;">
-          **Nota de seguridad**: Al hacer clic en los enlaces anteriores, se abrirá de forma segura el portal SGI y su decisión se guardará automáticamente en el sistema.
+          **Nota de seguridad**: Al hacer clic en los enlaces anteriores, se abrirá de forma segura el portal GEMS y su decisión se guardará automáticamente en el sistema.
         </p>
       </div>
     </div>

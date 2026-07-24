@@ -2,6 +2,7 @@ import React from 'react';
 import {
   makeStyles,
   shorthands,
+  tokens,
 } from '@fluentui/react-components';
 import {
   BoardRegular,
@@ -24,11 +25,17 @@ const useStyles = makeStyles({
   sidebar: {
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: 'var(--color-midnight-blue, #001F3F)',
-    color: '#fff',
+    backgroundColor: 'var(--color-glass-bg)',
+    backdropFilter: 'var(--backdrop-blur)',
+    WebkitBackdropFilter: 'var(--backdrop-blur)',
+    color: tokens.colorNeutralForeground1,
     height: '100vh',
     ...shorthands.padding('16px'),
     transition: 'width 0.3s ease',
+    borderRight: '1px solid var(--color-glass-border)',
+  },
+  sidebarCollapsed: {
+    ...shorthands.padding('16px', '8px'),
   },
   logo: {
     fontSize: '20px',
@@ -37,6 +44,7 @@ const useStyles = makeStyles({
     textAlign: 'center',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
+    color: tokens.colorBrandForeground1,
   },
   menu: {
     display: 'flex',
@@ -54,16 +62,22 @@ const useStyles = makeStyles({
     borderRadius: '4px',
     transition: 'background-color 0.2s',
     whiteSpace: 'nowrap',
+    color: tokens.colorNeutralForeground1,
     '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      backgroundColor: tokens.colorNeutralBackground1Hover,
     },
     '&.active': {
-      backgroundColor: 'var(--color-caribbean-red, #DC143C)',
+      backgroundColor: 'var(--color-midnight-blue)',
+      color: '#ffffff',
       fontWeight: 600,
     },
   },
+  menuItemCollapsed: {
+    ...shorthands.padding('12px', '0px'),
+    justifyContent: 'center',
+  },
   footer: {
-    borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+    borderTop: '1px solid var(--color-glass-border)',
     paddingTop: '16px',
     overflowX: 'hidden',
   },
@@ -71,23 +85,23 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: tokens.colorNeutralBackground2,
     ...shorthands.padding('10px'),
     borderRadius: '6px',
     marginBottom: '12px',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
   },
   userCardCollapsed: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: tokens.colorNeutralBackground2,
     width: '36px',
     height: '36px',
     borderRadius: '50%',
     margin: '0 auto 12px auto',
     cursor: 'pointer',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
   },
   avatarCircle: {
     display: 'flex',
@@ -96,10 +110,10 @@ const useStyles = makeStyles({
     width: '32px',
     height: '32px',
     borderRadius: '50%',
-    backgroundColor: 'var(--color-caribbean-red, #DC143C)',
+    backgroundColor: 'var(--color-caribbean-red)',
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: '13px',
+    fontSize: tokens.fontSizeBase200,
     flexShrink: 0,
   },
   userInfo: {
@@ -110,22 +124,22 @@ const useStyles = makeStyles({
   },
   userName: {
     fontWeight: 600,
-    fontSize: '12px',
-    color: '#fff',
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground1,
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
   userEmail: {
-    fontSize: '10px',
-    color: '#A19F9D',
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground2,
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
   roleBadge: {
     display: 'inline-block',
-    fontSize: '9px',
+    fontSize: tokens.fontSizeBase200,
     fontWeight: 'bold',
     ...shorthands.padding('1px', '5px'),
     borderRadius: '8px',
@@ -240,12 +254,12 @@ export const Sidebar: React.FC = () => {
 
   const handleMenuClick = (item: MenuItem) => {
     setActiveMenu(item.id);
-    navigate(item.path);
+    navigate(item.path, { viewTransition: true });
   };
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate('/', { viewTransition: true });
   };
 
   const visibleMenuItems = MENU_ITEMS.filter(item => {
@@ -260,16 +274,16 @@ export const Sidebar: React.FC = () => {
 
 
   return (
-    <div className={styles.sidebar} style={{ width: sidebarOpen ? '250px' : '64px' }}>
+    <div className={`${styles.sidebar} ${!sidebarOpen ? styles.sidebarCollapsed : ''}`} style={{ width: sidebarOpen ? '250px' : '64px' }}>
       <div className={styles.logo}>
-        {sidebarOpen ? <span>SGI Portal</span> : <span>SGI</span>}
+        {sidebarOpen ? <span>GEMS Portal</span> : <span>GEMS</span>}
       </div>
 
       <div className={styles.menu}>
         {visibleMenuItems.map((item) => (
           <div
             key={item.id}
-            className={`${styles.menuItem} ${activeMenu === item.id || (activeMenu !== 'configuracion' && item.id === 'configuracion' && window.location.pathname.startsWith('/configuracion')) ? 'active' : ''}`}
+            className={`${styles.menuItem} ${!sidebarOpen ? styles.menuItemCollapsed : ''} ${activeMenu === item.id || (activeMenu !== 'configuracion' && item.id === 'configuracion' && window.location.pathname.startsWith('/configuracion')) ? 'active' : ''}`}
             onClick={() => handleMenuClick(item as MenuItem)}
             title={!sidebarOpen ? item.label : undefined}
           >
@@ -283,7 +297,7 @@ export const Sidebar: React.FC = () => {
 
       <div className={styles.footer}>
         <div
-          className={styles.menuItem}
+          className={`${styles.menuItem} ${!sidebarOpen ? styles.menuItemCollapsed : ''}`}
           onClick={handleLogout}
           style={{ marginTop: '0px' }}
           title={!sidebarOpen ? 'Salir' : undefined}

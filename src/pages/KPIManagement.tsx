@@ -201,7 +201,7 @@ export const KPIManagement: React.FC = () => {
           Gestión de Indicadores
         </Text>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <Button icon={<DataLineRegular />} appearance="outline" onClick={() => navigate('/kpis')}>
+          <Button icon={<DataLineRegular />} appearance="outline" onClick={() => navigate('/kpis', { viewTransition: true })}>
             Ver Reportes
           </Button>
           {canEdit && (

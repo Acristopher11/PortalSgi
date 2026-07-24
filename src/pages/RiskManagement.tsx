@@ -273,7 +273,7 @@ export const RiskManagement: React.FC = () => {
 
   const getScoreColor = (score: number) => {
     if (score >= 6) return 'var(--color-caribbean-red, #DC143C)'; // Alto
-    if (score >= 4) return '#FFB900'; // Moderado
+    if (score >= 4) return '#9a6e00'; // Moderado (alto contraste)
     return '#107C10'; // Bajo
   };
 
@@ -518,7 +518,7 @@ export const RiskManagement: React.FC = () => {
                     verColor = 'var(--color-caribbean-red, #DC143C)';
                   } else if (ver > 4.0) {
                     verLevel = 'Medio';
-                    verColor = '#FFB900';
+                    verColor = '#9a6e00';
                   }
 
                   return (

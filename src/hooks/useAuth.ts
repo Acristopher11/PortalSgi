@@ -62,7 +62,7 @@ export function useAuth() {
         setLoadingUser(true);
         // Fetch users using the repository
         const users = await getAllUsuarios();
-        const match = users.find(u => u.email.toLowerCase() === userEmail.toLowerCase() && u.activo);
+        const match = users.find(u => u.email.toLowerCase() === userEmail.toLowerCase());
 
         if (active) {
           if (match) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from '@fluentui/react-components';
+import { Text, tokens } from '@fluentui/react-components';
 import type { Risk } from '../../types';
 
 interface RiskHeatmapProps {
@@ -18,13 +18,13 @@ export const RiskHeatmap: React.FC<RiskHeatmapProps> = ({
 
   const getScoreColor = (score: number) => {
     if (score >= 6) return 'var(--color-caribbean-red, #DC143C)'; // Alto (6-9)
-    if (score >= 4) return '#FFB900'; // Moderado (4-5)
+    if (score >= 4) return '#9a6e00'; // Moderado (4-5) - amarillo de alto contraste
     return '#107C10'; // Bajo (1-3)
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', backgroundColor: '#fff', padding: '24px', borderRadius: '8px', border: '1px solid #E8EAED', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-      <Text weight="bold" size={400} style={{ color: 'var(--color-midnight-blue, #001F3F)', marginBottom: '8px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', backgroundColor: tokens.colorNeutralBackground1, padding: '24px', borderRadius: '8px', border: `1px solid ${tokens.colorNeutralStroke1}`, boxShadow: 'var(--shadow-subtle)' }}>
+      <Text weight="bold" size={400} style={{ color: tokens.colorNeutralForeground1, marginBottom: '8px' }}>
         {title}
       </Text>
       
@@ -37,7 +37,7 @@ export const RiskHeatmap: React.FC<RiskHeatmapProps> = ({
           alignItems: 'center',
           fontWeight: 'bold',
           fontSize: '11px',
-          color: 'var(--color-midnight-blue, #001F3F)',
+          color: tokens.colorNeutralForeground1,
           writingMode: 'vertical-lr',
           transform: 'rotate(180deg)',
           paddingRight: '4px',
@@ -53,7 +53,7 @@ export const RiskHeatmap: React.FC<RiskHeatmapProps> = ({
             textAlign: 'center',
             fontWeight: 'bold',
             fontSize: '11px',
-            color: 'var(--color-midnight-blue, #001F3F)',
+            color: tokens.colorNeutralForeground1,
             letterSpacing: '2px',
             marginBottom: '4px',
             userSelect: 'none'
@@ -65,7 +65,7 @@ export const RiskHeatmap: React.FC<RiskHeatmapProps> = ({
             {/* Header Row */}
             <div></div>
             {probabilityScale.map(p => (
-              <div key={p} style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '11px', color: '#636F7D' }}>
+              <div key={p} style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '11px', color: tokens.colorNeutralForeground2 }}>
                 {p === 1 ? 'Baja (1)' : p === 2 ? 'Moderada (2)' : 'Alta (3)'}
               </div>
             ))}
@@ -73,7 +73,7 @@ export const RiskHeatmap: React.FC<RiskHeatmapProps> = ({
             {/* Grid Rows */}
             {impactScale.map(i => (
               <React.Fragment key={i}>
-                <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#636F7D', display: 'flex', alignItems: 'center', height: '60px' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '11px', color: tokens.colorNeutralForeground2, display: 'flex', alignItems: 'center', height: '60px' }}>
                   {i === 1 ? 'Bajo (1)' : i === 2 ? 'Moderado (2)' : 'Alto (3)'}
                 </div>
                 {probabilityScale.map(p => {
@@ -116,12 +116,12 @@ export const RiskHeatmap: React.FC<RiskHeatmapProps> = ({
           </div>
         </div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginTop: '12px', fontSize: '11px', color: '#636F7D' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginTop: '12px', fontSize: '11px', color: tokens.colorNeutralForeground2 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <div style={{ width: '12px', height: '12px', backgroundColor: '#107C10', borderRadius: '2px' }}></div> Bajo (1-3)
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <div style={{ width: '12px', height: '12px', backgroundColor: '#FFB900', borderRadius: '2px' }}></div> Moderado (4-5)
+          <div style={{ width: '12px', height: '12px', backgroundColor: '#9a6e00', borderRadius: '2px' }}></div> Moderado (4-5)
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <div style={{ width: '12px', height: '12px', backgroundColor: 'var(--color-caribbean-red, #DC143C)', borderRadius: '2px' }}></div> Alto (6-9)
